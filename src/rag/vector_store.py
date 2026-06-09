@@ -29,11 +29,16 @@ class ChromaPolicyStore:
 
     def rebuild(self, markdown_path: Path) -> None:
         try:
-            existing = self.collection.get()
-            if existing and existing["ids"]:
-                self.collection.delete(ids=existing["ids"])
+            col_name = self.collection.name
+            self.client.delete_collection(name=col_name)
+            self.collection = self.client.create_collection(name=col_name)
         except Exception:
-            pass
+            try:
+                existing = self.collection.get()
+                if existing and existing["ids"]:
+                    self.collection.delete(ids=existing["ids"])
+            except Exception:
+                pass
 
         if not markdown_path.exists():
             raise FileNotFoundError(f"Markdown policy file not found at {markdown_path}")

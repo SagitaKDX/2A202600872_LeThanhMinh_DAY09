@@ -62,7 +62,7 @@ Nhiệm vụ của bạn là:
 3. Trích xuất chính xác đường dẫn citation (ví dụ: `policy_mock_vi.md > 5.10. Quan hệ giữa trạng thái đơn hàng và quyền trả hàng`) từ các tài liệu được cung cấp ở trên. Không tự chế citation.
 
 Định dạng đầu ra BẮT BUỘC phải là một đối tượng JSON duy nhất theo cấu trúc sau (không kèm lời dẫn giải nào khác):
-{
+{{
   "status": "ok",
   "summary": "Tóm tắt chính sách ngắn gọn, đầy đủ bằng tiếng Việt.",
   "facts": [
@@ -71,7 +71,7 @@ Nhiệm vụ của bạn là:
   "citations": [
     "policy_mock_vi.md > [Tên mục chính xác]"
   ]
-}
+}}
 """
 
 DATA_WORKER_PROMPT = """Bạn là Worker 2 (Data Access Agent). Nhiệm vụ của bạn là tra cứu và tổng hợp dữ liệu thực tế về đơn hàng, khách hàng hoặc voucher dựa trên các kết quả từ công cụ (tool) đã chạy.
@@ -84,7 +84,7 @@ Hãy đọc kết quả và tạo báo cáo tóm tắt thông tin:
 - Nếu dữ liệu hợp lệ, tóm tắt các thông tin quan trọng bằng tiếng Việt.
 
 Định dạng đầu ra BẮT BUỘC phải là một đối tượng JSON duy nhất theo cấu trúc sau (không kèm lời dẫn giải nào khác):
-{
+{{
   "status": "ok" hoặc "not_found",
   "summary": "Tóm tắt dữ liệu tra cứu được bằng tiếng Việt.",
   "facts": [
@@ -92,7 +92,7 @@ Hãy đọc kết quả và tạo báo cáo tóm tắt thông tin:
   ],
   "missing_fields": [],
   "not_found_entities": ["Tên hoặc mã thực thể không tìm thấy, ví dụ: 'order_id 9999' hoặc 'customer_id C999'"]
-}
+}}
 """
 
 RESPONSE_WORKER_PROMPT = """Bạn là Worker 3 (Response Synthesis Agent) chịu trách nhiệm tổng hợp câu trả lời cuối cùng cho người dùng.
