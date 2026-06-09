@@ -1,8 +1,15 @@
 import sys
 from pathlib import Path
+import os
+
+# Clean up proxy environment variables containing ::1 to prevent httpx url parsing bug
+for var in ["no_proxy", "NO_PROXY", "No_Proxy"]:
+    if var in os.environ:
+        os.environ[var] = ",".join([p for p in os.environ[var].split(",") if "::1" not in p])
 
 # Add src to python path to run directly if needed
 sys.path.append(str(Path(__file__).resolve().parent))
+
 
 from app.config import Settings
 from rag.embeddings import SentenceTransformerEmbeddings

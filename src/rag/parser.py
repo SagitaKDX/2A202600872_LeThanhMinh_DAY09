@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-
 def parse_policy_markdown(markdown_text: str) -> list[dict]:
     chunks = []
     lines = markdown_text.splitlines()
@@ -45,4 +42,5 @@ def parse_policy_markdown(markdown_text: str) -> list[dict]:
             
     flush_chunk()
     return chunks
+
 
