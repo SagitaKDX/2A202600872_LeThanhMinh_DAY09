@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SagitaKDX - Multi-Agent Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="app-container">
+        <!-- Dashboard Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <i class="fa-solid fa-microchip-ai logo-icon"></i>
+                <div class="logo-text">
+                    <h1>SagitaKDX AI</h1>
+                    <p>Multi-Agent Customer Assistant Dashboard</p>
+                </div>
+            </div>
+            <nav class="tab-navigation">
+                <button class="nav-btn active" data-tab="chat">
+                    <i class="fa-regular fa-comments"></i> Trò Chuyện & Trace
+                </button>
+                <button class="nav-btn" data-tab="evaluation">
+                    <i class="fa-solid fa-chart-line"></i> Đánh Giá Batch Run
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Body -->
+        <main class="app-content">
+            <!-- TAB 1: CHAT & TRACE VIEW -->
+            <section id="chat-tab" class="tab-panel active">
+                <div class="chat-trace-grid">
+                    <!-- Chat Interface -->
+                    <div class="card chat-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-message-bot text-primary"></i> Trợ Lý Đổi Trả & Đơn Hàng</h2>
+                            <span class="status-badge online"><span class="dot"></span> Trực tuyến</span>
+                        </div>
+                        <div class="chat-messages" id="chat-box">
+                            <div class="message assistant-msg">
+                                <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div class="msg-content">
+                                    <p>Xin chào! Tôi là Trợ lý mua sắm đa tác nhân. Tôi có thể hỗ trợ bạn tra cứu đơn hàng, kiểm tra voucher, và tư vấn chính sách đổi trả hàng. Bạn cần giúp gì hôm nay?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Suggestions Row -->
+                        <div class="suggestions-container">
+                            <p class="suggestion-title">Câu hỏi gợi ý:</p>
+                            <div class="suggestions-list">
+                                <button class="suggest-btn" data-q="Chính sách hoàn trả hàng ra sao?">Chính sách trả hàng</button>
+                                <button class="suggest-btn" data-q="Đơn hàng 1971 bao giờ được giao?">Đơn 1971 giao khi nào?</button>
+                                <button class="suggest-btn" data-q="Đơn hàng 2058 còn trong thời gian trả hàng không?">Đơn 2058 trả được không?</button>
+                                <button class="suggest-btn" data-q="Voucher của khách hàng C001 còn những mã nào dùng được?">Voucher của C001</button>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Nhập câu hỏi của bạn tại đây... (ví dụ: Đơn hàng 2058...)" autocomplete="off">
+                            <button id="send-btn" class="send-btn">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step-by-Step Trace Log -->
+                    <div class="card trace-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-route text-accent"></i> Quy Trình Xử Lý Đa Tác Nhân (Trace Logs)</h2>
+                            <button id="clear-trace-btn" class="btn-text" title="Xóa logs trace"><i class="fa-solid fa-trash-can"></i> Clear</button>
+                        </div>
+                        <div class="trace-body" id="trace-container">
+                            <!-- Empty State -->
+                            <div class="empty-trace" id="empty-trace-msg">
+                                <i class="fa-solid fa-diagram-project"></i>
+                                <p>Gửi một câu hỏi để xem chi tiết luồng xử lý và đưa ra quyết định của các Agent ở đây.</p>
+                            </div>
+                            
+                            <!-- Timeline container -->
+                            <div class="timeline" id="timeline" style="display: none;">
+                                <!-- Timeline items will be injected by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: EVALUATION HUB -->
+            <section id="evaluation-tab" class="tab-panel">
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card card">
+                        <div class="metric-icon bg-primary-soft"><i class="fa-solid fa-list-check text-primary"></i></div>
+                        <div class="metric-details">
+                            <span class="metric-label">Tổng Số Ca Test</span>
+                            <span class="metric-value" id="eval-total">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card card">
+                        <div class="metric-icon bg-success-soft"><i class="fa-solid fa-circle-check text-success"></i></div>
+                        <div class="metric-details">
+                            <span class="metric-label">Khớp Trạng Thái (Pass)</span>
+                            <span class="metric-value" id="eval-passed">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card card">
+                        <div class="metric-icon bg-warning-soft"><i class="fa-solid fa-circle-exclamation text-warning"></i></div>
+                        <div class="metric-details">
+                            <span class="metric-label">Cần Làm Rõ (Clarify)</span>
+                            <span class="metric-value" id="eval-clarify">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card card">
+                        <div class="metric-icon bg-danger-soft"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>
+                        <div class="metric-details">
+                            <span class="metric-label">Không Tìm Thấy (Not Found)</span>
+                            <span class="metric-value" id="eval-notfound">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Control Console -->
+                <div class="card control-card">
+                    <div class="control-header">
+                        <div class="control-title">
+                            <h2><i class="fa-solid fa-terminal text-primary"></i> Trình Đánh Giá Hệ Thống Batch Test</h2>
+                            <p>Kích hoạt và theo dõi quá trình chạy thử nghiệm toàn bộ 22 ca test trong tập dữ liệu <code>data/test.json</code></p>
+                        </div>
+                        <button id="run-eval-btn" class="btn btn-primary">
+                            <i class="fa-solid fa-play"></i> Bắt Đầu Đánh Giá (Run Batch)
+                        </button>
+                    </div>
+                    
+                    <div class="progress-section" id="progress-container" style="display: none;">
+                        <div class="progress-info">
+                            <span class="progress-status" id="progress-text">Đang chạy các ca thử nghiệm...</span>
+                            <span class="progress-percent" id="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Cases Table Card -->
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-table"></i> Chi Tiết Kết Quả Batch Evaluation</h2>
+                        <div class="eval-meta" id="eval-meta-info" style="display: none;">
+                            <span class="meta-item"><i class="fa-regular fa-clock"></i> Cập nhật cuối: <strong id="eval-last-run">-</strong></span>
+                            <span class="meta-item"><i class="fa-solid fa-bullseye"></i> Độ chính xác định tuyến: <strong id="eval-accuracy">0%</strong></span>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th width="80px">Mã ID</th>
+                                    <th>Câu Hỏi</th>
+                                    <th width="140px">Kỳ Vọng (Expected)</th>
+                                    <th width="140px">Đầu Ra (Actual)</th>
+                                    <th width="120px">Trạng Thái</th>
+                                    <th width="100px">Chi Tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eval-table-body">
+                                <tr>
+                                    <td colspan="6" class="table-empty">
+                                        <i class="fa-solid fa-chart-simple"></i>
+                                        <p>Chưa có dữ liệu đánh giá. Nhấn nút <strong>Bắt Đầu Đánh Giá</strong> để chạy test suite.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Detailed Modal for Case Results -->
+        <div id="result-modal" class="modal">
+            <div class="modal-content card">
+                <div class="modal-header">
+                    <h2><i class="fa-solid fa-eye text-primary"></i> Chi Tiết Ca Thử Nghiệm <span id="modal-case-id" class="case-badge"></span></h2>
+                    <span class="modal-close" id="modal-close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="info-block">
+                        <label>Câu hỏi của khách hàng:</label>
+                        <p class="info-text question-text" id="modal-question"></p>
+                    </div>
+                    <div class="modal-grid">
+                        <div>
+                            <label>Trạng thái Kỳ vọng:</label>
+                            <div class="badge-display" id="modal-expected-badge"></div>
+                        </div>
+                        <div>
+                            <label>Trạng thái Thực tế:</label>
+                            <div class="badge-display" id="modal-actual-badge"></div>
+                        </div>
+                    </div>
+                    <div class="info-block">
+                        <label>Kết quả phân tích đường đi của Supervisor:</label>
+                        <pre class="json-block" id="modal-route"></pre>
+                    </div>
+                    <div class="info-block">
+                        <label>Câu trả lời cuối cùng (Final Answer):</label>
+                        <div class="answer-output markdown-body" id="modal-answer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

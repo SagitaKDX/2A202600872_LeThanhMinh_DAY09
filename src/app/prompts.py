@@ -61,6 +61,8 @@ Nhiệm vụ của bạn là:
 2. Tóm tắt nội dung chính sách liên quan trực tiếp đến câu hỏi bằng tiếng Việt một cách chính xác.
 3. Trích xuất chính xác đường dẫn citation (ví dụ: `policy_mock_vi.md > 5.10. Quan hệ giữa trạng thái đơn hàng và quyền trả hàng`) từ các tài liệu được cung cấp ở trên. Không tự chế citation.
 
+LƯU Ý CỰC KỲ QUAN TRỌNG: Bạn PHẢI trả lời hoàn toàn bằng tiếng Việt. Tuyệt đối KHÔNG sử dụng chữ tiếng Trung (Chinese) hoặc bất kỳ ngôn ngữ nào khác trong phần tóm tắt (summary) và thông tin trích xuất.
+
 Định dạng đầu ra BẮT BUỘC phải là một đối tượng JSON duy nhất theo cấu trúc sau (không kèm lời dẫn giải nào khác):
 {{
   "status": "ok",
@@ -72,6 +74,11 @@ Nhiệm vụ của bạn là:
     "policy_mock_vi.md > [Tên mục chính xác]"
   ]
 }}
+"""
+
+DATA_WORKER_SYSTEM_PROMPT = """Bạn là chuyên gia tra cứu dữ liệu. Bạn PHẢI sử dụng các công cụ (tools) tra cứu đơn hàng, khách hàng, hoặc voucher nếu cần thiết để trả lời câu hỏi. Hãy gọi công cụ thích hợp dựa trên tham số có trong câu hỏi.
+
+LƯU Ý CỰC KỲ QUAN TRỌNG: Bạn PHẢI phản hồi và giải thích hoàn toàn bằng tiếng Việt. Tuyệt đối KHÔNG sử dụng chữ tiếng Trung (Chinese) hoặc bất kỳ ngôn ngữ nào khác.
 """
 
 DATA_WORKER_PROMPT = """Bạn là Worker 2 (Data Access Agent). Nhiệm vụ của bạn là tra cứu và tổng hợp dữ liệu thực tế về đơn hàng, khách hàng hoặc voucher dựa trên các kết quả từ công cụ (tool) đã chạy.
@@ -105,6 +112,8 @@ Dưới đây là thông tin nhận được từ các bước xử lý trước
 
 Nhiệm vụ của bạn là tổng hợp và xuất câu trả lời theo đúng định dạng mẫu quy định bên dưới. 
 CHỈ xuất ra câu trả lời theo đúng cấu trúc, không thêm bất kỳ văn bản giải thích thừa nào bên ngoài cấu trúc.
+
+LƯU Ý CỰC KỲ QUAN TRỌNG: Toàn bộ câu trả lời, bao gồm cả phần Answer, Evidence, Policy, Order data, Question, Message, PHẢI được viết hoàn toàn bằng tiếng Việt chuẩn. Tuyệt đối KHÔNG được dịch sang hoặc sử dụng chữ tiếng Trung (Chinese) hoặc bất kỳ ngôn ngữ nào khác trong đầu ra.
 
 ---
 

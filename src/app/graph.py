@@ -17,6 +17,7 @@ from app.utils import extract_json_payload, timestamp_utc
 from app.prompts import (
     SUPERVISOR_PROMPT,
     POLICY_WORKER_PROMPT,
+    DATA_WORKER_SYSTEM_PROMPT,
     DATA_WORKER_PROMPT,
     RESPONSE_WORKER_PROMPT,
 )
@@ -166,6 +167,24 @@ def build_graph(assistant: ShoppingAssistant) -> Any:
                 "needs_data": True,
                 "clarification_question": None,
             }
+
+        # Deterministic routing overrides to correct routing classification drift in Qwen
+        import re
+        has_customer_id = bool(re.search(r'\b[cC]\d+\b', question))
+        has_order_id = bool(re.search(r'\b\d{4,}\b', question))
+
+        if has_customer_id or has_order_id:
+            if route.get("status") == "clarification_needed":
+                route["status"] = "ok"
+                route["needs_data"] = True
+                route["clarification_question"] = None
+        else:
+            # If no IDs are present, and it's a data-only query, force clarification_needed
+            if route.get("status") == "ok" and route.get("needs_data") and not route.get("needs_policy"):
+                route["status"] = "clarification_needed"
+                route["needs_data"] = False
+                route["clarification_question"] = "Chào bạn, bạn vui lòng cung cấp mã đơn hàng (order_id) hoặc mã khách hàng (customer_id) để mình hỗ trợ nhé."
+
         trace_entry = {
             "node": "supervisor",
             "timestamp": timestamp_utc(),
@@ -217,11 +236,7 @@ def build_graph(assistant: ShoppingAssistant) -> Any:
     def worker_2_data_node(state: ShoppingState) -> dict[str, Any]:
         question = state["question"]
         messages = [
-            SystemMessage(
-                content="Bạn là chuyên gia tra cứu dữ liệu. Bạn PHẢI sử dụng các công cụ (tools) tra cứu "
-                        "đơn hàng, khách hàng, hoặc voucher nếu cần thiết để trả lời câu hỏi. "
-                        "Hãy gọi công cụ thích hợp dựa trên tham số có trong câu hỏi."
-            ),
+            SystemMessage(content=DATA_WORKER_SYSTEM_PROMPT),
             HumanMessage(content=question),
         ]
         model_with_tools = assistant.chat_model.bind_tools(assistant.data_tools)
